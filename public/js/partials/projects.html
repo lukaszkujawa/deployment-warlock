@@ -1,0 +1,17 @@
+ <div class="panel panel-default">
+ 	<div class="panel-heading">
+ 		Projects
+ 		<a type="button" class="btn btn-primary pull-right" href="#projects/create">add new project</a>
+ 	</div>
+	 <table class="table projects">
+
+		<tbody>
+		 	<tr ng-repeat="project in projects">
+		 		<td>
+		 			<a href="#projects/edit/{{project.id}}">{{project.name}}</a>
+		 		</td>
+		 	</tr>
+		</tbody>
+
+	 </table>
+ </div>

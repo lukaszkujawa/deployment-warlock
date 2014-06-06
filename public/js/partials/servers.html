@@ -1,0 +1,17 @@
+ <div class="panel panel-default">
+ 	<div class="panel-heading">
+ 		Servers
+ 		<a type="button" class="btn btn-primary pull-right" href="#servers/create">add new server</a>
+ 	</div>
+	 <table class="table projects">
+
+		<tbody>
+		 	<tr ng-repeat="server in servers">
+		 		<td>
+		 			<a href="#servers/edit/{{server.id}}">{{server.name}}</a>
+		 		</td>
+		 	</tr>
+		</tbody>
+
+	 </table>
+ </div>

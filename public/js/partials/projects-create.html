@@ -1,0 +1,14 @@
+<h1 class="page-header">Create a new project</h1>
+<form role="form">
+	<div class="form-group">
+		<label for="projectName">Name</label>
+		<input ng-model="newProject.name" type="text" class="form-control" name="projectName" id="projectName" placeholder="Enter project name">
+	</div>
+	<div class="form-group">
+		<label for="deployments">Deployments</label>
+		<select ng-model="newProject.deployments" multiple class="form-control" id="deployments">
+		</select>
+	</div>
+	<button type="submit" class="btn btn-default" ng-click="projectSave()">Save</button>
+	<a type="button" class="btn btn-link" href="#projects">Cancel</a>
+</form>

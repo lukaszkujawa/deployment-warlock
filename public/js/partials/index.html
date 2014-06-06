@@ -1,0 +1,8 @@
+<ul class="projects">
+	<li ng-repeat="project in projects">
+		<h3>{{project.name}}</h3>
+		<span ng-repeat="deployment in project.deployments">
+			{{deployment.name}}
+		</span>
+	</li>
+</ul>
