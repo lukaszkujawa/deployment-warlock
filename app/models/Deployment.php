@@ -1,11 +1,14 @@
 <?php
 
-class Deployment {
+namespace DW\Model;
+
+class Deployment extends \DW\ORM\Model {
 	
+
+	public $name;
+	public $script;
+
 	protected static $tableName = 'deployments';
 
-	public function getByProjectId( $id ) {
-		
-	}
-
+	
 }

@@ -19,12 +19,17 @@ config(['$routeProvider', function($routeProvider) {
   $routeProvider.when('/deployments', 
       {templateUrl: '/js/partials/deployments.html', controller: 'DeploymentsCtrl'});
 
+  $routeProvider.when('/deployments/edit/:deploymentId', 
+      {templateUrl: '/js/partials/deployments-edit.html', controller: 'DeploymentsEditCtrl'});
+
+  $routeProvider.when('/deployments/create', 
+      {templateUrl: '/js/partials/deployments-create.html', controller: 'DeploymentsCreateCtrl'});
+
   $routeProvider.when('/projects/edit/:projectId', 
   		{templateUrl: '/js/partials/projects-edit.html', controller: 'ProjectsEditCtrl'});
   
   $routeProvider.when('/projects/create', 
   		{templateUrl: '/js/partials/projects-create.html', controller: 'ProjectsCreateCtrl'});
-
 
   $routeProvider.when('/servers', 
       {templateUrl: '/js/partials/servers.html', controller: 'ServersCtrl'});

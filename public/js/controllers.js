@@ -140,6 +140,45 @@ angular.module('depwar').factory('Project', function( $http, Model ) {
 
 });
 
+angular.module('depwar').factory('Deployment', function( $http, Model ) {
+
+  var Deployment = function( data ) {
+    if( data ) {
+      this.populate( data );
+    }
+
+  };
+
+  Deployment.endPoint = '/deployments';
+
+  Deployment.init = function( data ) {
+    if( data.deployments != undefined ) {
+      return data.deployments;
+    }
+    if( data.deployment != undefined ) {
+      return new Deployment( data.deployment );
+    }
+    else {
+      return data;
+    }
+  }
+
+  Deployment.prototype = {
+    getEndpoint: function() {
+      return Deployment.endPoint;
+    },
+
+    init: function(input) {
+      return Deployment.init(input);
+    }
+  };
+
+  Model.extend( Deployment );
+
+  return Deployment;
+
+});
+
 angular.module('depwar').factory('Server', function( $http, Model ) {
 
   var Server = function( data ) {
@@ -181,16 +220,16 @@ angular.module('depwar').factory('Server', function( $http, Model ) {
 
 angular.module('depwar.controllers', [])
   
-  .controller('NavCtrl', ['$scope', '$location', function($scope, $location) {
+  .controller('NavCtrl', function($scope, $location) {
   
   	$scope.navClass = function (page) {
   		var currentRoute = $location.path().substring(1) || 'home';
   		return page === currentRoute ? 'active' : '';
   	};
   
-  }])
+  })
 
-  .controller('ModalCtl',['$scope', 'modalWarning', function($scope, modalWarning) {
+  .controller('ModalCtl', function($scope, modalWarning) {
     
     modalWarning.callback = function( message, callback ) {
       $scope.message = message;
@@ -201,9 +240,9 @@ angular.module('depwar.controllers', [])
       $('#modal').modal();
     };
 
-  }])
+  })
 
-  .controller('FlashMessageCtl',['$scope', '$timeout', 'flashMessage', function($scope, $timeout, flashMessage) {
+  .controller('FlashMessageCtl', function($scope, $timeout, flashMessage) {
     
     $scope.showMessage = false;
 
@@ -215,23 +254,23 @@ angular.module('depwar.controllers', [])
       }, 2000);
     }
 
-  }])
+  })
 
-  .controller('IntedxCtrl', ['$scope', '$http', function($scope, $http) {
+  .controller('IntedxCtrl', function($scope, $http) {
 
     $http.get('/projects').success(function(data){
   		$scope.projects = data.projects;
   	});
 
-  }])
+  })
 
-  .controller('ProjectsCtrl', ['$scope', '$http', function($scope, $http) {
+  .controller('ProjectsCtrl', function($scope, $http) {
 
   	$http.get('/projects').success(function(data){
   		$scope.projects = data.projects;
   	});
 
-  }])
+  })
 
   .controller('ProjectsEditCtrl', function($scope, $http, $routeParams, $location, Project, flashMessage, modalWarning) {
 
@@ -260,11 +299,31 @@ angular.module('depwar.controllers', [])
     })
   })
 
-  .controller('DeploymentsCtrl', ['$scope', '$http', function($scope, $http) {
+  .controller('DeploymentsCtrl', function( $scope, Deployment ) {
+    Deployment.getAll().then(function(deployments){
+      $scope.deployments = deployments;
+    });
+  })
 
-  }])
+  .controller('DeploymentsEditCtrl', function( $scope, $routeParams, $location, flashMessage, Deployment ) {
+    Deployment.getById( $routeParams.deploymentId ).then(function(deployment){
+      $scope.deployment = deployment;
+    });
+  })
 
-  .controller('ProjectsCreateCtrl', ['$scope', '$http', '$location', 'flashMessage', function($scope, $http, $location, flashMessage) {
+  .controller('DeploymentsCreateCtrl', function($scope, $location, flashMessage, Deployment) {
+    $scope.deployment = new Deployment();
+
+    $scope.createDeployment = function() {
+      $scope.deployment.create().then(function(response){
+        $location.path('/deployments');
+        flashMessage.setMessage( 'Deployment created' );
+      });
+    };
+
+  })  
+
+  .controller('ProjectsCreateCtrl', function($scope, $http, $location, flashMessage) {
   	$scope.projectSave = function() {
   		$http.put('/projects', $scope.newProject )
       			.success(function( data ) {
@@ -276,13 +335,13 @@ angular.module('depwar.controllers', [])
       			});
   	}
 
-  }])
+  })
 
-  .controller('ServersCtrl', ['$scope', 'Server', function($scope, Server) {
+  .controller('ServersCtrl', function($scope, Server) {
     Server.getAll().then(function(servers){
       $scope.servers = servers;
     });
-  }])
+  })
 
   .controller('ServersCreateCtrl', function($scope, Server, $location) {
     $scope.server = new Server({
@@ -294,7 +353,7 @@ angular.module('depwar.controllers', [])
         $location.path('/servers');
         flashMessage.setMessage( 'Server created' );
       });
-    }
+    };
 
     $scope.showPassword = 1;
     $scope.showSSHKey = 0;
@@ -331,6 +390,20 @@ angular.module('depwar.controllers', [])
     
     Server.getById( $routeParams.serverId ).then(function(server){
       $scope.server = server;
+    });
+
+    $scope.showPassword = 1;
+    $scope.showSSHKey = 0;
+
+    $scope.$watch( 'server.auth_type', function(){
+      if( $scope.server.auth_type == 0 ) {
+        $scope.showPassword = 1;
+        $scope.showSSHKey = 0;
+      }
+      else {
+        $scope.showPassword = 0;
+        $scope.showSSHKey = 1;
+      }
     });
 
   })

@@ -38,7 +38,17 @@ class ServersController extends AbstractController {
 	}
 
 	public function deleteServerAction( $id ) {
+		$server = \DW\Model\Server::getById( $id );
 
+		if( ! $server instanceof \DW\Model\Server ) {
+			return $this->throwError( sprintf( "Can't find server id %d", $id ) );
+		}
+		else {
+			$server->delete();
+			$this->view->deletedId = $server->getId();
+		}
+
+		$this->output();
 	}
 
 	public function addServerAction() {

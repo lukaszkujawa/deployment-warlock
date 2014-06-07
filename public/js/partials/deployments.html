@@ -1,1 +1,17 @@
-deploy
+ <div class="panel panel-default">
+ 	<div class="panel-heading">
+ 		Deployments
+ 		<a type="button" class="btn btn-primary pull-right" href="#deployments/create">add new deployment</a>
+ 	</div>
+	 <table class="table projects">
+
+		<tbody>
+		 	<tr ng-repeat="deployment in deployments">
+		 		<td>
+		 			<a href="#deployments/edit/{{deployment.id}}">{{deployment.name}}</a>
+		 		</td>
+		 	</tr>
+		</tbody>
+
+	 </table>
+ </div>
