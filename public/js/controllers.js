@@ -275,7 +275,7 @@ angular.module('depwar.controllers', [])
   .controller('ProjectsEditCtrl', function($scope, $http, $routeParams, $location, Project, flashMessage, modalWarning) {
 
     $scope.projectDelete = function() {
-      modalWarning.show( 'Click "continue" if you want to remove the project.', function(){
+      modalWarning.show( 'Click "continue" if you want to remove this project.', function(){
         $http.delete( '/projects/' + $scope.project.id )
               .success(function( data ) {
                 $location.path('/projects');
@@ -305,7 +305,23 @@ angular.module('depwar.controllers', [])
     });
   })
 
-  .controller('DeploymentsEditCtrl', function( $scope, $routeParams, $location, flashMessage, Deployment ) {
+  .controller('DeploymentsEditCtrl', function( $scope, $routeParams, $location, flashMessage, Deployment, modalWarning ) {
+    $scope.deploymentUpdate = function() {
+      $scope.deployment.update().then(function(resp){
+        $location.path('/deployments');
+        flashMessage.setMessage( 'Deployment updated' );
+      });
+    };
+
+    $scope.deploymentDelete = function() {
+      modalWarning.show( 'Click "continue" if you want to remove this deployment.', function(){
+        $scope.deployment.delete().then(function(resp){
+          $location.path('/deployments');
+          flashMessage.setMessage( 'Server deleted' );
+        });
+      });
+    };
+
     Deployment.getById( $routeParams.deploymentId ).then(function(deployment){
       $scope.deployment = deployment;
     });
@@ -380,7 +396,7 @@ angular.module('depwar.controllers', [])
     };
 
     $scope.serverDelete = function() {
-      modalWarning.show( 'Click "continue" if you want to remove the server.', function(){
+      modalWarning.show( 'Click "continue" if you want to remove this server.', function(){
         $scope.server.delete().then(function(resp){
           $location.path('/servers');
           flashMessage.setMessage( 'Server deleted' );

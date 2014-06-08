@@ -40,7 +40,17 @@ class DeploymentsController extends AbstractController {
 	}
 
 	public function deleteDeploymentAction( $id ) {
+		$deployment = \DW\Model\Deployment::getById( $id );
 
+		if( ! $deployment instanceof \DW\Model\Deployment ) {
+			return $this->throwError( sprintf( "Can't find deployment id %d", $id ) );
+		}
+		else {
+			$deployment->delete();
+			$this->view->deletedId = $deployment->getId();
+		}
+
+		$this->output();
 	}
 
 	public function addDeploymentAction() {
@@ -54,7 +64,18 @@ class DeploymentsController extends AbstractController {
 	}
 
 	public function updateDeploymentAction( $id ) {
+		$deployment = \DW\Model\Deployment::getById( $id );
 
+		if( ! $deployment instanceof \DW\Model\Deployment ) {
+			return $this->throwError( sprintf( "Can't find deployment id %d", $id ) );
+		}
+		else {
+			$deployment->populate( $this->getJsonRequest() );
+			$deployment->save();
+			$this->view->updatedId = $deployment->getId();
+		}
+
+		$this->output();
 	}
 
 }
