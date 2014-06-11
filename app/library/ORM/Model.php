@@ -7,9 +7,9 @@ abstract class Model {
 	protected static $tableName;
 	protected static $joins;
 
-	private static $publicProperties;
+	protected static $publicProperties = array();
 
-	protected $id;
+	public $id;
 
 	public function __construct( $options = array() ) {
 		if( ! empty( $options ) ) {
@@ -20,10 +20,6 @@ abstract class Model {
 	public function populate( $data ) {
 		if( is_object( $data ) ) {
 			$data = (array) $data;
-		}
-
-		if( isset( $data['id'] ) ) {
-			unset( $data['id'] );
 		}
 
 		foreach( $data as $key => $val ) {
@@ -69,22 +65,39 @@ abstract class Model {
 		return $sth->fetch( \PDO::FETCH_CLASS );
 	}
 
-	public function getPublicProperties() {
-		if( self::$publicProperties == null ) {
-			self::$publicProperties = array();
-			$ref = new \ReflectionClass( get_class( $this ) );
-			foreach( $ref->getProperties( \ReflectionProperty::IS_PUBLIC ) as $property ) {
-				self::$publicProperties[] = $property->name;
+	public static function getColumns( $tableAlias = false ) {
+		$columns = array();
+
+		foreach( array_merge( array('id'), self::getPublicProperties() ) as $name ) {
+			if( $tableAlias ) {
+				$columns[] = sprintf( '`%s`.`%s` `%s.%s`', $tableAlias, $name, $tableAlias, $name );
+			}
+			else {
+				$columns[] = sprintf( '`%s`', $name );
 			}
 		}
 
-		return self::$publicProperties;
+		return implode(',', $columns);
+	}
+
+	public static function getPublicProperties() {
+		$className = get_called_class();
+		
+		if( ! isset( $className::$publicProperties[ $className ] ) ) {
+			$className::$publicProperties[ $className ] = array();
+			$ref = new \ReflectionClass( $className );
+			foreach( $ref->getProperties( \ReflectionProperty::IS_PUBLIC ) as $property ) {
+				$className::$publicProperties[ $className ][] = $property->name;
+			}
+		}
+
+		return $className::$publicProperties[ $className ];
 	}
 
 	public function getValues( $deepSearch = false ) {
 		$values = array('id' => $this->getId() );
 
-		foreach( $this->getPublicProperties() as $name ) {
+		foreach( self::getPublicProperties() as $name ) {
 			$values[ $name ] = $this->$name;
 		}
 
@@ -171,5 +184,19 @@ abstract class Model {
 		$client->execute( $sql, $bind );
 	}
 
+	public function fetchAllByPrefix( $sth ) {
+		$rows = array();
+		foreach( $sth->fetchAll( \PDO::FETCH_ASSOC ) as $row ) {
+			$data = array();
+
+			foreach( $row as $col => $val ) {
+				$col = explode('.', $col);
+				$data[ $col[0] ][ $col[1] ] = $val;
+			}
+
+			$rows[] = $data;
+		}
+		return $rows;
+	}
 
 }

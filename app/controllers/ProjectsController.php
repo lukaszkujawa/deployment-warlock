@@ -12,6 +12,18 @@ class ProjectsController extends AbstractController {
 		$this->delete( '/projects/:id', 'deleteProject' );
 		$this->put( '/projects', 'addProject' );
 		$this->post( '/projects/:id', 'updateProject' );
+		$this->get( '/projects/:id/deploy', 'deploy' );
+	}
+
+	public function deployAction( $id ) {
+		$project = \DW\Model\Project::getById( $id );
+
+		if( ! $project instanceof \DW\Model\Project ) {
+			return $this->throwError( sprintf( "Can't find project id %d", $id ) );
+		}
+
+		$projectDeployer = new \DW\ProjectDeployer();
+		$projectDeployer->deploy( $project );
 	}
 
 	public function deleteProjectAction( $id ) {

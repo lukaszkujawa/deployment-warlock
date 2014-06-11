@@ -10,6 +10,7 @@ class Server extends \DW\ORM\Model {
 	public $auth_type;
 	public $password;
 	public $ssh_key;
+	public $last_update;
 
 	protected static $tableName = 'servers';
 

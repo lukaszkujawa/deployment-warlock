@@ -272,22 +272,37 @@ angular.module('depwar.controllers', [])
 
   })
 
-  .controller('ProjectsEditCtrl', function($scope, $http, $routeParams, $location, Project, flashMessage, modalWarning) {
+  .controller('ProjectsEditCtrl', function($scope, $http, $routeParams, $location, Project, Server, Deployment, flashMessage, modalWarning) {
+
+    $scope.activeDeployment = null;
+    $scope.activeServer = null;
+
+    $scope.deploymentServersRemove = function( id ) {
+      $scope.project.deploymentAndServers.splice(id, 1);
+    };
+
+    $scope.deploymentServersAdd = function() {
+      $scope.project.deploymentAndServers.push({
+        deployment: $scope.activeDeployment,
+        server: $scope.activeServer
+      });
+
+      $scope.activeDeployment = null;
+      $scope.activeServer = null;
+
+    }
 
     $scope.projectDelete = function() {
       modalWarning.show( 'Click "continue" if you want to remove this project.', function(){
-        $http.delete( '/projects/' + $scope.project.id )
-              .success(function( data ) {
-                $location.path('/projects');
-                flashMessage.setMessage( 'Project Deleted' );
-              })
-              .error(function( data ) {
-                alert( 'Error: ' + data );
-              });
+        $scope.project.delete().then(function(resp){
+           $location.path('/projects');
+            flashMessage.setMessage( 'Project Deleted' );
         });
+      });
     }
 
     $scope.projectUpdate = function() {
+      console.log( $scope.project );
       $scope.project.update().then(function(){
         $location.path('/projects');
         flashMessage.setMessage( 'Project Updated' );
@@ -297,6 +312,15 @@ angular.module('depwar.controllers', [])
     Project.getById( $routeParams.projectId ).then(function( project ) {
       $scope.project = project;
     })
+
+    Deployment.getAll().then(function( deployments ) {
+      $scope.deployments = deployments;
+    });
+
+    Server.getAll().then(function( servers ) {
+      $scope.servers = servers;
+    });
+
   })
 
   .controller('DeploymentsCtrl', function( $scope, Deployment ) {
@@ -307,6 +331,7 @@ angular.module('depwar.controllers', [])
 
   .controller('DeploymentsEditCtrl', function( $scope, $routeParams, $location, flashMessage, Deployment, modalWarning ) {
     $scope.deploymentUpdate = function() {
+      $scope.deployment.last_update = new Date();
       $scope.deployment.update().then(function(resp){
         $location.path('/deployments');
         flashMessage.setMessage( 'Deployment updated' );
@@ -331,6 +356,7 @@ angular.module('depwar.controllers', [])
     $scope.deployment = new Deployment();
 
     $scope.createDeployment = function() {
+      $scope.deployment.last_update = new Date();
       $scope.deployment.create().then(function(response){
         $location.path('/deployments');
         flashMessage.setMessage( 'Deployment created' );
@@ -365,6 +391,7 @@ angular.module('depwar.controllers', [])
     });
 
     $scope.createServer = function() {
+      $scope.server.last_update = new Date();
       $scope.server.create().then(function(response){
         $location.path('/servers');
         flashMessage.setMessage( 'Server created' );
@@ -389,6 +416,7 @@ angular.module('depwar.controllers', [])
   .controller('ServersEditCtrl', function($scope, $routeParams, Server, $location, flashMessage, modalWarning) {
     
     $scope.serverUpdate = function() {
+      $scope.server.last_update = new Date();
       $scope.server.update().then(function(resp){
         $location.path('/servers');
         flashMessage.setMessage( 'Server updated' );
