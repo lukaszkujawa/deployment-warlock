@@ -49,3 +49,15 @@ code {
   text-align: center;
   margin-top: 1em;
 }
+
+.console {
+  padding: 1em 0;
+}
+
+.console pre {
+  background: #000;
+  color: #F0F0F0;
+  border: none;
+  min-height: 25em;
+  padding: 1em;
+}

@@ -13,6 +13,9 @@ config(['$routeProvider', function($routeProvider) {
   $routeProvider.when('/home', 
   		{templateUrl: '/js/partials/index.html', controller: 'IntedxCtrl'});
   
+  $routeProvider.when('/deploy/:projectId', 
+      {templateUrl: '/js/partials/deploy.html', controller: 'DeployCtrl'});
+
   $routeProvider.when('/projects', 
   		{templateUrl: '/js/partials/projects.html', controller: 'ProjectsCtrl'});
 

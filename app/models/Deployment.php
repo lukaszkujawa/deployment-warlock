@@ -9,5 +9,5 @@ class Deployment extends \DW\ORM\Model {
 	public $last_update;
 
 	protected static $tableName = 'deployments';
-	
+
 }

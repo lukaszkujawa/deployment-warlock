@@ -131,7 +131,19 @@ angular.module('depwar').factory('Project', function( $http, Model ) {
 
     init: function(input) {
       return Project.init(input);
+    },
+
+    deploy: function() {
+      var that = this;
+      return $http.post( this.getEndpoint() + '/' + this.id + '/deploy', this ).then(function(response){
+        if( response.data.error == undefined ) {
+          return response.data;
+        } else {
+          alert( response.data.errorMessage );
+        }
+      });
     }
+
   };
 
   Model.extend( Project );
@@ -240,6 +252,18 @@ angular.module('depwar.controllers', [])
       $('#modal').modal();
     };
 
+  })
+  
+  .controller('DeployCtrl', function($scope, $routeParams, Project) {
+    $scope.deploy = function() {
+      $scope.project.deploy().then(function(resp){
+        $scope.console = resp.out;
+      });
+    };
+
+    Project.getById( $routeParams.projectId ).then(function( project ) {
+      $scope.project = project;
+    })
   })
 
   .controller('FlashMessageCtl', function($scope, $timeout, flashMessage) {

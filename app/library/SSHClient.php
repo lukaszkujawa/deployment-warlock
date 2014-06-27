@@ -5,42 +5,40 @@ namespace DW;
 class SSHClient {
 
 	private $server;
-	private $descriptorspec = array(
-								   0 => array("pipe", "r"), 
-								   1 => array("pipe", "w"),  
-								   2 => array("pipe", "r") );
 
 	public function __construct( \DW\Model\Server $server ) {
 		$this->server = $server;
 	}
 
-	public function getAuthOptions() {
-		if( $this->server->auth_type == 0 ) {
-			return sprintf( "-p%s", 
-							$this->server->login, 
-							$this->server->password );
-		}
-		else {
-			throw new \Exception('Not Implemented');
-		}
-	}
-
-	public function uploadFile( $filePath ) {
+	public function uploadFile( $filePath, $destFileName ) {
 		$cmd = sprintf( 'scp %s %s@%s:.',
 						$filePath,
 						$this->server->login,
 						$this->server->address );
 
-		$destFileName = '/tmp/' . basename( $filePath );
-
 		$connection = ssh2_connect( $this->server->address, 22);
 		ssh2_auth_password($connection, $this->server->login, $this->server->password );
 
-		if( ! ssh2_scp_send($connection, $filePath, $destFileName, 0644) ) {
+		if( ! ssh2_scp_send( $connection, $filePath, $destFileName, 0700 ) ) {
 			throw new \Exception('Couldn\'t copy the file');
 		}
+	}
 
+	public function executeRemoteScript( $path, $stdoutCallback, $stderrCallback ) {
+		$connection = ssh2_connect( $this->server->address, 22 );
+		ssh2_auth_password( $connection, $this->server->login, $this->server->password );
 
+		$stream = ssh2_exec($connection, $path );
+		$errorStream = ssh2_fetch_stream($stream, SSH2_STREAM_STDERR);
+
+		while ( !feof( $stream ) && !feof( $errorStream  ) ) {
+			while( $line = fgets( $stream ) ) {
+				$stdoutCallback( $line );
+			}
+			while( $line = fgets( $errorStream ) ) {
+				$stderrCallback( $line );
+			}
+		}
 	}
 
 }

@@ -61,7 +61,7 @@ abstract class Model {
 
 		$sql = sprintf( 'SELECT * FROM %s WHERE id = :id', $tableName );
 		$sth = self::getClient()->execute( $sql, array( 'id' => $id ), $childClass );
-		
+
 		return $sth->fetch( \PDO::FETCH_CLASS );
 	}
 

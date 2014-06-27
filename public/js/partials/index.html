@@ -1,8 +1,12 @@
 <ul class="projects">
 	<li ng-repeat="project in projects">
-		<h3>{{project.name}}</h3>
-		<span ng-repeat="deployment in project.deployments">
-			{{deployment.name}}
+		<h3>
+			{{project.name}}
+			<small><a href="#/deploy/{{project.id}}">deploy</a></small>
+		</h3>
+		<span ng-repeat="das in project.deploymentAndServers">
+			{{das.server.name}} ({{das.server.address}}) -
+			{{das.deployment.name}}
 		</span>
 	</li>
 </ul>

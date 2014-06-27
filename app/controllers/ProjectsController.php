@@ -12,18 +12,33 @@ class ProjectsController extends AbstractController {
 		$this->delete( '/projects/:id', 'deleteProject' );
 		$this->put( '/projects', 'addProject' );
 		$this->post( '/projects/:id', 'updateProject' );
+		$this->post( '/projects/:id/deploy', 'deploy' );
+		$this->get( '/projects/deployment', 'deploy' );
+
 		$this->get( '/projects/:id/deploy', 'deploy' );
+		$this->get( '/projects/:id/deploy/:token', 'deployStatus' );
+	}
+
+	public function deployStatusAction( $id, $token ) {
+		echo \DW\XProcesIO::getContents( $token );
 	}
 
 	public function deployAction( $id ) {
+		$token = 'ABC123';
 		$project = \DW\Model\Project::getById( $id );
 
 		if( ! $project instanceof \DW\Model\Project ) {
 			return $this->throwError( sprintf( "Can't find project id %d", $id ) );
 		}
 
-		$projectDeployer = new \DW\ProjectDeployer();
+		$xProcessIO = new \DW\XProcesIO( $token, \DW\XProcesIO::WRITE );
+		$projectDeployer = new \DW\ProjectDeployer( $xProcessIO );
 		$projectDeployer->deploy( $project );
+		$xProcessIO->close();
+
+		$this->view->out = \DW\XProcesIO::getContents( $token );
+
+		$this->output();
 	}
 
 	public function deleteProjectAction( $id ) {

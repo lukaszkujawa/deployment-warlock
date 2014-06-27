@@ -69,7 +69,6 @@ class Project extends \DW\ORM\Model {
 				'server' => new Server( $row['s'] )
 			);
 		}
-		
 		return $this->deploymentsServers;
 	}	
 
