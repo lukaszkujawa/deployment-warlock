@@ -44,14 +44,7 @@
 	<div ng-show="showSSHKey" class="form-group">
 		<label for="serverSSHKey" class="col-sm-2 control-label">ssh key</label>
 		<div class="col-sm-10">
-			<input ng-model="server.ssh_key" type="text" class="form-control" id="serverSSHKey" placeholder="ssh-rsa AAAANzaC1kc3MAAACBAN431nwhJuE5F5HhsTVS7WlSCH1dn/vaPOZQ6WOBvCYIY6k97UkW
-XbsLjKIBz2P/jaL2w92U72cUmKiXgVFaxP7LgRylF0UHjFoPfbbesY2isfdHTgGnbmJDOui+RHGNiLl6
-f62q0mPIZQxyq6SSyqLD6NiO3IlyrsCSXAerkrdxAAAAFQD7wt2MuZU27cF4oOd6puEcm/jl7wAAAIEA
-vQvsiBcgEVvlAIMnZlP2QdO2O96p0wlCoHmKS8WYhwiAEB4QsLypM9ZQ/yG4HO7p9y7gcgo8cyUo/9jd
-pOMKAWVJSsujqqH0VBLHZVD5tdBPG4p4i3uws6my2z2AQARMfKN9L/uSmfEi69sDy6JkEah27yOp3zVh
-xZInM/hFrVcAAACBAL9K78gikerCL/LFLK4FkQp56drqx2WmubrAuG9SmnPpRQR5SNoA6lYI3CRttLHT
-540XW0PYDz53NnBc3C3/v3EE4nokyyUw783mWKbAbI6+jtibViUhfJwbi7xLB2TVyeWMBeHArsxkfHyO
-zFyjC4Db4UrmU71tYQfOlzmIipf7">
+			<select ng-model="server.ssh_key_id" ng-options="key.id as key.name for key in sshkeys" type="text" class="form-control" id="serverSSHKey" ></select>
 		</div>
 	</div>
 

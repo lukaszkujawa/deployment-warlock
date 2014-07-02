@@ -230,6 +230,46 @@ angular.module('depwar').factory('Server', function( $http, Model ) {
 
 });
 
+
+angular.module('depwar').factory('Sshkey', function( $http, Model ) {
+
+  var Sshkey = function( data ) {
+    if( data ) {
+      this.populate( data );
+    }
+
+  };
+
+  Sshkey.endPoint = '/sshkeys';
+
+  Sshkey.init = function( data ) {
+    if( data.sshkeys != undefined ) {
+      return data.sshkeys;
+    }
+    if( data.sshkey != undefined ) {
+      return new Sshkey( data.sshkey );
+    }
+    else {
+      return data;
+    }
+  }
+
+  Sshkey.prototype = {
+    getEndpoint: function() {
+      return Sshkey.endPoint;
+    },
+
+    init: function(input) {
+      return Sshkey.init(input);
+    }
+  };
+
+  Model.extend( Sshkey );
+
+  return Sshkey;
+
+});
+
 angular.module('depwar.controllers', [])
   
   .controller('NavCtrl', function($scope, $location) {
@@ -409,7 +449,7 @@ angular.module('depwar.controllers', [])
     });
   })
 
-  .controller('ServersCreateCtrl', function($scope, Server, $location) {
+  .controller('ServersCreateCtrl', function($scope, Server, $location, Sshkey) {
     $scope.server = new Server({
       auth_type: 0
     });
@@ -421,6 +461,10 @@ angular.module('depwar.controllers', [])
         flashMessage.setMessage( 'Server created' );
       });
     };
+
+    Sshkey.getAll().then(function(keys){
+      $scope.sshkeys = keys;
+    });
 
     $scope.showPassword = 1;
     $scope.showSSHKey = 0;
@@ -437,7 +481,7 @@ angular.module('depwar.controllers', [])
     });
   })
 
-  .controller('ServersEditCtrl', function($scope, $routeParams, Server, $location, flashMessage, modalWarning) {
+  .controller('ServersEditCtrl', function($scope, $routeParams, Server, $location, flashMessage, modalWarning, Sshkey) {
     
     $scope.serverUpdate = function() {
       $scope.server.last_update = new Date();
@@ -456,24 +500,69 @@ angular.module('depwar.controllers', [])
       });
     };
     
+    Sshkey.getAll().then(function(keys){
+      $scope.sshkeys = keys;
+    });
+
     Server.getById( $routeParams.serverId ).then(function(server){
       $scope.server = server;
+
+      $scope.$watch( 'server.auth_type', function(){
+        if( $scope.server.auth_type == 0 ) {
+          $scope.showPassword = 1;
+          $scope.showSSHKey = 0;
+        }
+        else {
+          $scope.showPassword = 0;
+          $scope.showSSHKey = 1;
+        }
+      });
     });
 
     $scope.showPassword = 1;
     $scope.showSSHKey = 0;
 
-    $scope.$watch( 'server.auth_type', function(){
-      if( $scope.server.auth_type == 0 ) {
-        $scope.showPassword = 1;
-        $scope.showSSHKey = 0;
-      }
-      else {
-        $scope.showPassword = 0;
-        $scope.showSSHKey = 1;
-      }
-    });
+  })
 
+  .controller('SshkeysCtrl', function($scope, Sshkey){
+    Sshkey.getAll().then(function(keys){
+      $scope.sshkeys = keys;
+    });
+  })
+
+  .controller('SshkeysCreateCtrl', function($scope, $location, Sshkey, flashMessage){
+    $scope.sshkey = new Sshkey();
+
+    $scope.createSshkey = function() {
+      $scope.sshkey.create().then(function(response){
+        $location.path('/sshkeys');
+        flashMessage.setMessage( 'Key added' );
+      });
+    };
+
+  })
+
+  .controller('SshkeysEditCtrl', function($scope, $routeParams, Sshkey, $location, flashMessage, modalWarning){
+    $scope.sshkeyUpdate = function() {
+      //$scope.sshkey.last_update = new Date();
+      $scope.sshkey.update().then(function(resp){
+        $location.path('/sshkeys');
+        flashMessage.setMessage( 'Key updated' );
+      });
+    };
+
+    $scope.sshkeyDelete = function() {
+      modalWarning.show( 'Click "continue" if you want to remove this SSH key.', function(){
+        $scope.sshkey.delete().then(function(resp){
+          $location.path('/sshkeys');
+          flashMessage.setMessage( 'Key deleted' );
+        });
+      });
+    };
+
+    Sshkey.getById( $routeParams.keyId ).then(function(sshkey){
+      $scope.sshkey = sshkey;
+    });
   })
 
   ;

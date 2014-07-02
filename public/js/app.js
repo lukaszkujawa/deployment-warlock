@@ -43,5 +43,16 @@ config(['$routeProvider', function($routeProvider) {
   $routeProvider.when('/servers/edit/:serverId', 
       {templateUrl: '/js/partials/servers-edit.html', controller: 'ServersEditCtrl'});
 
+  $routeProvider.when('/sshkeys', 
+      {templateUrl: '/js/partials/sshkeys.html', controller: 'SshkeysCtrl'});
+
+  $routeProvider.when('/sshkeys/create', 
+      {templateUrl: '/js/partials/sshkeys-create.html', controller: 'SshkeysCreateCtrl'});
+
+  $routeProvider.when('/sshkeys/edit/:keyId', 
+      {templateUrl: '/js/partials/sshkeys-edit.html', controller: 'SshkeysEditCtrl'});
+
+
+
   $routeProvider.otherwise({redirectTo: '/home'});
 }]);

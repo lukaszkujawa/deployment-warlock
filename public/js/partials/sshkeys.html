@@ -1,0 +1,17 @@
+ <div class="panel panel-default">
+ 	<div class="panel-heading">
+ 		SSH Keys
+ 		<a type="button" class="btn btn-primary pull-right" href="#sshkeys/create">add new key</a>
+ 	</div>
+	 <table class="table projects">
+
+		<tbody>
+		 	<tr ng-repeat="sshkey in sshkeys">
+		 		<td>
+		 			<a href="#sshkeys/edit/{{sshkey.id}}">{{sshkey.name}}</a>
+		 		</td>
+		 	</tr>
+		</tbody>
+
+	 </table>
+ </div>

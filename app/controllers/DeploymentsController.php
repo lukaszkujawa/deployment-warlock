@@ -21,7 +21,7 @@ class DeploymentsController extends AbstractController {
 		foreach( $deployments as $deployment ) {
 			$this->view->deployments[] = $deployment->getValues( true );
 		}
-
+		
 		$this->output();
 	}
 
