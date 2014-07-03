@@ -74,6 +74,9 @@
 
   <script src="/bower_components/angular/angular.js"></script>
   <script src="/bower_components/angular-route/angular-route.js"></script>
+  <script src="/bower_components/ace-builds/src-min-noconflict/ace.js"></script>
+  <script src="/bower_components/angular-ui-ace/ui-ace.js"></script>
+
   <script src="/js/app.js"></script>
   <script src="/js/services.js"></script>
   <script src="/js/controllers.js"></script>

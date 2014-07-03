@@ -1,6 +1,7 @@
 <?php
 $allowed = array(
 	'127.0.0.1',
+	'192.168.41.1',
 	'localhost',
 	'::1'
 );
@@ -8,7 +9,7 @@ $allowed = array(
 if( ! in_array( $_SERVER['REMOTE_ADDR'], $allowed ) ) {
 	echo json_encode(array(
 		'error' => 1,
-		'errorMessage' => 'Connection rejected by server. Please add host IP to the allowed group.'
+		'errorMessage' => 'Connection from '. $_SERVER['REMOTE_ADDR'].' rejected by server. Please add host IP to the allowed group.'
 	));
 	exit();
 }

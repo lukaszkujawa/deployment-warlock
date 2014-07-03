@@ -1,13 +1,13 @@
 'use strict';
 
-
 // Declare app level module which depends on filters, and services
 angular.module('depwar', [
   'ngRoute',
   'depwar.filters',
   'depwar.services',
   'depwar.directives',
-  'depwar.controllers'
+  'depwar.controllers',
+  'ui.ace'
 ]).
 config(['$routeProvider', function($routeProvider) {
   $routeProvider.when('/home', 

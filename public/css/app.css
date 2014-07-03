@@ -61,3 +61,7 @@ code {
   min-height: 25em;
   padding: 1em;
 }
+
+.ace_editor { 
+  height: 200px; 
+}

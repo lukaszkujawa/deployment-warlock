@@ -1,5 +1,7 @@
 'use strict';
 
+
+
 angular.module('depwar').factory('Model', function( $http ) {
 
   var Model = function( data ) {
@@ -7,7 +9,6 @@ angular.module('depwar').factory('Model', function( $http ) {
       this.populate( data );
     }
   };
-
 
   Model._static = {
 
@@ -414,6 +415,7 @@ angular.module('depwar.controllers', [])
     Deployment.getById( $routeParams.deploymentId ).then(function(deployment){
       $scope.deployment = deployment;
     });
+
   })
 
   .controller('DeploymentsCreateCtrl', function($scope, $location, flashMessage, Deployment) {
