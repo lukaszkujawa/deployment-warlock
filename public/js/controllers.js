@@ -136,13 +136,37 @@ angular.module('depwar').factory('Project', function( $http, Model ) {
 
     deploy: function() {
       var that = this;
-      return $http.post( this.getEndpoint() + '/' + this.id + '/deploy', this ).then(function(response){
+      var post = $http.post( this.getEndpoint() + '/' + this.id + '/deploy', this ).then(function(response){
         if( response.data.error == undefined ) {
           return response.data;
         } else {
           alert( response.data.errorMessage );
         }
       });
+
+      setTimeout(function(){
+        var socket = new WebSocket('ws://192.168.41.128:8081/');
+
+        socket.onopen = function(e) {
+            socket.send( "Do something" );
+            console.log("Connection established!");
+            socket.close();
+        };
+
+        socket.onmessage = function(e) {
+            console.log(e.data);
+        };
+
+        socket.onerror = function(e) {
+          console.log(e);
+        }
+
+        socket.onclode = function(e) {
+          console.log( "Disconnected" );
+        }
+      },500);
+
+      return post;
     }
 
   };
@@ -300,11 +324,16 @@ angular.module('depwar.controllers', [])
       $scope.project.deploy().then(function(resp){
         $scope.console = resp.out;
       });
+
     };
 
     Project.getById( $routeParams.projectId ).then(function( project ) {
       $scope.project = project;
     })
+
+    
+    
+
   })
 
   .controller('FlashMessageCtl', function($scope, $timeout, flashMessage) {

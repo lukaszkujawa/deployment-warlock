@@ -31,6 +31,12 @@ class ProjectsController extends AbstractController {
 			return $this->throwError( sprintf( "Can't find project id %d", $id ) );
 		}
 
+
+		$cmd = sprintf( 'php %s/bin/agent.php', APP_PATH );
+		shell_exec( $cmd );
+		echo 'OK';
+
+		/*
 		$xProcessIO = new \DW\XProcesIO( $token, \DW\XProcesIO::WRITE );
 		$projectDeployer = new \DW\ProjectDeployer( $xProcessIO );
 		$projectDeployer->deploy( $project );
@@ -39,6 +45,7 @@ class ProjectsController extends AbstractController {
 		$this->view->out = \DW\XProcesIO::getContents( $token );
 
 		$this->output();
+		*/
 	}
 
 	public function deleteProjectAction( $id ) {
