@@ -31,10 +31,11 @@
       <table>
         <tbody ng-repeat="ds in project.deploymentAndServers">
           <tr>
-            <td>{{ds.deployment.name}}</td>
-            <td>&nbsp;/&nbsp;</td>
-            <td>{{ds.server.name}}</td>
-            <td><button ng-click="deploymentServersRemove($index)" class="btn btn-link">remove</button></td>
+            <td><span class="xlabel zlabel-default">{{ds.deployment.name}}</span></td>
+            <td>&nbsp;<span class="glyphicon glyphicon-arrow-right"></span>&nbsp;</td>
+            <td><span class="xlabel zlabel-primary">{{ds.server.name}}</span></td>
+            <td>
+              <button ng-click="deploymentServersRemove($index)" class="btn btn-link"><span class="glyphicon glyphicon-trash"></span></button></td>
           </tr>  
         </tbody>      
       </table>

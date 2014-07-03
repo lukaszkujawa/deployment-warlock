@@ -337,6 +337,40 @@ angular.module('depwar.controllers', [])
 
   })
 
+  .controller('ProjectsCreateCtrl', function($scope, $http, $location, flashMessage, Project, Server, Deployment) {
+    $scope.projectSave = function() {
+      $scope.project.create().then(function(){
+        $location.path('/projects');
+        flashMessage.setMessage( 'Project Created' );
+      });
+    };
+
+    $scope.deploymentServersRemove = function( id ) {
+      $scope.project.deploymentAndServers.splice(id, 1);
+    };
+
+    $scope.deploymentServersAdd = function() {
+      $scope.project.deploymentAndServers.push({
+        deployment: $scope.activeDeployment,
+        server: $scope.activeServer
+      });
+
+      $scope.activeDeployment = null;
+      $scope.activeServer = null;
+    }
+
+    $scope.project = new Project({deploymentAndServers:[]});
+
+    Deployment.getAll().then(function( deployments ) {
+      $scope.deployments = deployments;
+    });
+
+    Server.getAll().then(function( servers ) {
+      $scope.servers = servers;
+    });
+
+  })
+
   .controller('ProjectsEditCtrl', function($scope, $http, $routeParams, $location, Project, Server, Deployment, flashMessage, modalWarning) {
 
     $scope.activeDeployment = null;
@@ -367,7 +401,6 @@ angular.module('depwar.controllers', [])
     }
 
     $scope.projectUpdate = function() {
-      console.log( $scope.project );
       $scope.project.update().then(function(){
         $location.path('/projects');
         flashMessage.setMessage( 'Project Updated' );
@@ -430,20 +463,6 @@ angular.module('depwar.controllers', [])
     };
 
   })  
-
-  .controller('ProjectsCreateCtrl', function($scope, $http, $location, flashMessage) {
-  	$scope.projectSave = function() {
-  		$http.put('/projects', $scope.newProject )
-      			.success(function( data ) {
-              $location.path('/projects');
-              flashMessage.setMessage( 'Project Created' );
-      			})
-      			.error(function( data ) {
-      				alert( 'Error: ' + data );
-      			});
-  	}
-
-  })
 
   .controller('ServersCtrl', function($scope, Server) {
     Server.getAll().then(function(servers){

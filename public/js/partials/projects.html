@@ -10,6 +10,16 @@
 		 		<td>
 		 			<a href="#projects/edit/{{project.id}}">{{project.name}}</a>
 		 		</td>
+		 		<td>
+		 			<div ng-repeat="depSer in project.deploymentAndServers">
+		 				{{depSer.deployment.name}}
+		 				<span class="glyphicon glyphicon-arrow-right"></span>
+		 				{{depSer.server.name}}
+		 			</div>
+		 		</td>
+		 		<td>
+		 			<a href="#/deploy/{{project.id}}">deploy</a>
+		 		</td>
 		 	</tr>
 		</tbody>
 
