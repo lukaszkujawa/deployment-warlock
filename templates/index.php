@@ -33,6 +33,7 @@
           <li ng-class="navClass('projects')"><a href="#projects">Projects</a></li>
           <li ng-class="navClass('deployments')"><a href="#deployments">Deployments</a></li>
           <li ng-class="navClass('servers')"><a href="#servers">Servers</a></li>
+          <li ng-class="navClass('sshkeys')"><a href="#sshkeys">SSH Keys</a></li>
         </ul>
       </div>
 
