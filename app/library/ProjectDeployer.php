@@ -6,7 +6,7 @@ class ProjectDeployer {
 
 	private $xProcessIO;
 
-	public function __construct( \DW\XProcesIO $xProcessIO ) {
+	public function __construct( $xProcessIO ) {
 		$this->xProcessIO = $xProcessIO;
 	}
 

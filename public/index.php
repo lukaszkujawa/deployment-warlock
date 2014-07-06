@@ -37,4 +37,5 @@ $app = new \Slim\Slim(array(
 $dispatcher = new \DW\MVC\Dispatcher( $app );
 $dispatcher->prepare();
 
+ 
 $app->run();

@@ -134,6 +134,44 @@ angular.module('depwar').factory('Project', function( $http, Model ) {
       return Project.init(input);
     },
 
+    onWebsocketData: null,
+
+    getWebSocket: function() {
+      var url = window.location.href;
+      url = url.split('/')[2];
+      url = url.split(':');
+      return new WebSocket('ws://' + url[0] + ':8081/');
+    },
+
+    watchDeployment: function() {
+      var that = this;
+      var socket = this.getWebSocket();
+
+      socket.onopen = function(e) {
+      };
+
+      socket.onmessage = function(e) {
+        if(e.data == '[SERVER][0x00]') {
+          socket.close();
+        }
+        else {
+          if( that.onWebsocketData ) {
+            socket.send('[OK]');
+            that.onWebsocketData( e.data );
+          }
+        }
+      };
+
+      socket.onerror = function(e) {
+        alert('error');
+        console.log(e);
+      }
+
+      socket.onclode = function(e) {
+        alert( "Disconnected" );
+      }
+    },
+
     deploy: function() {
       var that = this;
       var post = $http.post( this.getEndpoint() + '/' + this.id + '/deploy', this ).then(function(response){
@@ -145,25 +183,7 @@ angular.module('depwar').factory('Project', function( $http, Model ) {
       });
 
       setTimeout(function(){
-        var socket = new WebSocket('ws://192.168.41.128:8081/');
-
-        socket.onopen = function(e) {
-            socket.send( "Do something" );
-            console.log("Connection established!");
-            socket.close();
-        };
-
-        socket.onmessage = function(e) {
-            console.log(e.data);
-        };
-
-        socket.onerror = function(e) {
-          console.log(e);
-        }
-
-        socket.onclode = function(e) {
-          console.log( "Disconnected" );
-        }
+        that.watchDeployment();
       },500);
 
       return post;
@@ -320,19 +340,22 @@ angular.module('depwar.controllers', [])
   })
   
   .controller('DeployCtrl', function($scope, $routeParams, Project) {
+    var consoleData = '';
     $scope.deploy = function() {
+      $('#console').text('');
+      consoleData = '';
       $scope.project.deploy().then(function(resp){
-        $scope.console = resp.out;
       });
-
     };
 
     Project.getById( $routeParams.projectId ).then(function( project ) {
-      $scope.project = project;
-    })
+      project.onWebsocketData = function(data) {
+        consoleData = consoleData + data;
+        $('#console').text( consoleData );
+      }
 
-    
-    
+      $scope.project = project;
+    });
 
   })
 

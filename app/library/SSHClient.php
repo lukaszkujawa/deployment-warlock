@@ -5,6 +5,8 @@ namespace DW;
 class SSHClient {
 
 	private $server;
+	private $stdout;
+	private $stderr;
 
 	public function __construct( \DW\Model\Server $server ) {
 		$this->server = $server;
@@ -24,21 +26,41 @@ class SSHClient {
 		}
 	}
 
-	public function executeRemoteScript( $path, $stdoutCallback, $stderrCallback ) {
+	public function executeRemoteScript( $path ) {
 		$connection = ssh2_connect( $this->server->address, 22 );
 		$this->auth( $connection );
 		
+		$this->stdout = ssh2_exec( $connection, $path );
+		$this->stderr = ssh2_fetch_stream( $this->stdout, SSH2_STREAM_STDERR );
+		
+		stream_set_blocking( $this->stdout, true );
+		stream_set_blocking( $this->stderr, true );
+	}
 
-		$stream = ssh2_exec($connection, $path );
-		$errorStream = ssh2_fetch_stream($stream, SSH2_STREAM_STDERR);
+	protected function getStremContent( $stream ) {
+		stream_set_timeout( $stream, 1 );
+		$content = @stream_get_contents( $this->stdout );
+		$info = stream_get_meta_data( $this->stdout );
+		if( $info['timed_out'] ) {
+			return false;
+		}
+		else {
+			return $content;
+		}
+	}
 
-		while ( !feof( $stream ) && !feof( $errorStream  ) ) {
-			while( $line = fgets( $stream ) ) {
-				$stdoutCallback( $line );
-			}
-			while( $line = fgets( $errorStream ) ) {
-				$stderrCallback( $line );
-			}
+	public function next() {
+		if( feof( $this->stdout ) && feof( $this->stderr ) ) {
+			return false;
+		}
+
+		$content = $this->getStremContent( $this->stdout );
+
+		if( ! $content ) {
+			return $this->getStremContent( $this->stderr );
+		} 
+		else {
+			return $content;
 		}
 	}
 

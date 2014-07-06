@@ -8,21 +8,52 @@ use Ratchet\ConnectionInterface;
 class Server implements MessageComponentInterface {
 
 	protected $clients;
+    private $project;
 
-	public function __construct() {
+	public function __construct( \DW\Model\Project $project ) {
+        $this->project = $project;
+        $this->deployer =  new \DW\IterativeProjectDeployer( $project );
         $this->clients = new \SplObjectStorage();
+    }
+
+    public function onStdOut( $data ) {
+        echo "STDOUT" . $data;
+        $this->broadcast( $data );
+    }
+
+    public function onStdErr( $data ) {
+        echo "STDERR" . $data;
+        $this->broadcast( $data );
+    }
+
+    public function broadcast( $data ) {
+        foreach ($this->clients as $client) {
+            $client->send( $data );
+        }
     }
 
     public function onOpen(ConnectionInterface $conn) {
    		$this->clients->attach($conn);
 
-    	echo "[+] New connection! ({$conn->resourceId})\n";
+        $data =  $this->deployer->next();
+        if( $data ) {
+            $this->broadcast( $data );
+        }
+        else {
+            $this->broadcast('[SERVER][0x00]');
+        }
     }
 
     public function onMessage(ConnectionInterface $from, $msg) {
+        $data = $this->deployer->next();
+        if( $data ) {
+            $this->broadcast( $data );
+        }
+        else {
+            $this->broadcast('[SERVER][0x00]');
+        }
     	
-    	echo "{^] Recieved: " . $msg;
-    	$from->send('Hey!');
+
     	/*
     	$numRecv = count($this->clients) - 1;
         echo sprintf('Connection %d sending message "%s" to %d other connection%s' . "\n"

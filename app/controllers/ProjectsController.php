@@ -32,9 +32,10 @@ class ProjectsController extends AbstractController {
 		}
 
 
-		$cmd = sprintf( 'php %s/bin/agent.php', APP_PATH );
-		shell_exec( $cmd );
-		echo 'OK';
+		$cmd = sprintf( 'php %s/bin/agent.php -p %d', APP_PATH, $project->getId() );
+		echo $cmd;
+		echo exec( $cmd );
+		
 
 		/*
 		$xProcessIO = new \DW\XProcesIO( $token, \DW\XProcesIO::WRITE );

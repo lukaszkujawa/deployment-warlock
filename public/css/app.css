@@ -58,8 +58,9 @@ code {
   background: #000;
   color: #F0F0F0;
   border: none;
-  min-height: 25em;
+  height: 32em;
   padding: 1em;
+  overflow: scroll;
 }
 
 .ace_editor { 
